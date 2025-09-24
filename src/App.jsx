@@ -1,20 +1,28 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 import Sidebar from './components/Sidebar/Sidebar';
 import News from './pages/News';
 import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+import Register from './pages/Register';
+
 function App() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+  const isRegisterPage = location.pathname === '/register';
+
   return (
     <div className="App">
-      <Sidebar />
+      {!(isLoginPage || isRegisterPage) && <Sidebar />}
       <main className="main-content">
         <div className="container">
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" />} />
             <Route path="/news" element={<News />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />}></Route>
           </Routes>
         </div>
       </main>

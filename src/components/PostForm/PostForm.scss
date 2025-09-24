@@ -114,6 +114,48 @@
           font-weight: 600;
         }
       }
+
+      &.sites-menu {
+        min-width: 280px;
+        max-height: 300px;
+        overflow-y: auto;
+
+        .dropdown-actions {
+          display: flex;
+          gap: 0.5rem;
+          padding: 0.5rem;
+          border-bottom: 1px solid #e5e7eb;
+
+          .action-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+
+            &:hover {
+              background: #e5e7eb;
+            }
+          }
+        }
+
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          input[type='checkbox'] {
+            margin: 0;
+            width: auto !important;
+          }
+
+          small {
+            color: #6b7280;
+            margin-left: auto;
+          }
+        }
+      }
     }
   }
 
@@ -269,6 +311,158 @@
     input,
     textarea {
       font-size: 0.95rem;
+    }
+  }
+
+  // Preview Modal
+  .preview-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+
+    .preview-modal {
+      background: white;
+      border-radius: 12px;
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+      .preview-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+
+        h2 {
+          margin: 0;
+          font-size: 1.5rem;
+          font-weight: 700;
+        }
+
+        .close-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 0.5rem;
+          border-radius: 6px;
+          color: #6b7280;
+
+          &:hover {
+            background: #f3f4f6;
+            color: #374151;
+          }
+        }
+      }
+
+      .preview-content {
+        padding: 1.5rem;
+        max-height: calc(90vh - 80px);
+        overflow-y: auto;
+
+        .preview-thumbnail {
+          margin-bottom: 1.5rem;
+
+          img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+          }
+        }
+
+        .preview-title {
+          font-size: 2rem;
+          font-weight: 800;
+          margin-bottom: 1rem;
+          color: #1f2937;
+        }
+
+        .preview-meta {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 2rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid #e5e7eb;
+
+          span {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+
+            &.category {
+              background: #dbeafe;
+              color: #1e40af;
+            }
+
+            &.author {
+              background: #f3f4f6;
+              color: #374151;
+            }
+
+            &.date {
+              background: #f0fdf4;
+              color: #166534;
+            }
+          }
+        }
+
+        .preview-blocks {
+          .preview-heading {
+            margin: 1.5rem 0 1rem 0;
+            font-weight: 700;
+            color: #1f2937;
+
+            &.h1 {
+              font-size: 1.875rem;
+            }
+
+            &.h2 {
+              font-size: 1.5rem;
+            }
+
+            &.h3 {
+              font-size: 1.25rem;
+            }
+          }
+
+          .preview-paragraph {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: #374151;
+          }
+
+          .preview-image-block {
+            margin: 1.5rem 0;
+
+            img {
+              width: 100%;
+              max-width: 500px;
+              height: auto;
+              border-radius: 8px;
+            }
+          }
+
+          .preview-list {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+
+            li {
+              margin-bottom: 0.5rem;
+              line-height: 1.6;
+              color: #374151;
+            }
+          }
+        }
+      }
     }
   }
 }

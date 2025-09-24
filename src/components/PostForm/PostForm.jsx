@@ -13,6 +13,8 @@ function PostForm() {
   const [blocks, setBlocks] = useState([]);
   const [openCategory, setOpenCategory] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedSites, setSelectedSites] = useState([]);
+  const [openSites, setOpenSites] = useState(false);
 
   const thumbnailUrl = useMemo(
     () => (thumbnail ? URL.createObjectURL(thumbnail) : ''),
@@ -20,6 +22,27 @@ function PostForm() {
   );
 
   const dropRef = useRef(null);
+
+  // Danh sách các trang web
+  const availableSites = [
+    { id: 'vinhomecangio', name: 'Vinhomes Green Paradise', url: 'http://vinhomes.org.vn/' },
+    { id: 'thegioriverside', name: 'The Gió Riverside', url: 'http://angia.org.vn/' },
+    { id: 'example', name: 'Example', url: 'http://example.com.vn' },
+  ];
+
+  const handleSiteToggle = (siteUrl) => {
+    setSelectedSites((prev) =>
+      prev.includes(siteUrl) ? prev.filter((url) => url !== siteUrl) : [...prev, siteUrl]
+    );
+  };
+
+  const handleSelectAllSites = () => {
+    setSelectedSites(availableSites.map((site) => site.url));
+  };
+
+  const handleDeselectAllSites = () => {
+    setSelectedSites([]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,32 +68,38 @@ function PostForm() {
       const formData = new FormData();
       formData.append('title', title.trim());
       formData.append('thumbnail', thumbnail);
-      
+
       // Xử lý blocks và tách file ảnh
       const processedBlocks = [];
       const imageFiles = [];
-      
+
       blocks.forEach((block) => {
         if (block.type === 'image' && block.content instanceof File) {
           // Lưu file ảnh và thay content bằng tên file
           imageFiles.push(block.content);
           processedBlocks.push({
             ...block,
-            content: block.content.name
+            content: block.content.name,
           });
         } else {
           processedBlocks.push(block);
         }
       });
-      
+
       // Thêm các file ảnh từ blocks
-      imageFiles.forEach(file => {
+      imageFiles.forEach((file) => {
         formData.append('blockImages', file);
       });
-      
+
       formData.append('blocks', JSON.stringify(processedBlocks));
       formData.append('category', category);
       formData.append('author', 'Admin');
+      formData.append(
+        'targetSites',
+        JSON.stringify(
+          selectedSites.length > 0 ? selectedSites : availableSites.map((site) => site.url)
+        )
+      );
 
       const response = await axios.post('http://localhost:5000/api/v1/news/upload', formData, {
         headers: {
@@ -85,6 +114,7 @@ function PostForm() {
         setThumbnail(null);
         setCategory('Tin tổng hợp');
         setBlocks([]);
+        setSelectedSites([]);
       } else {
         toast.error(response.data.message || 'Có lỗi xảy ra');
       }
@@ -112,7 +142,7 @@ function PostForm() {
     <form className="post-form" onSubmit={handleSubmit}>
       <div className="page-header">
         <div>
-      <h1>Đăng tin tức mới</h1>
+          <h1>Đăng tin tức mới</h1>
           <p className="subtitle">Tạo và xem trước tin tức trước khi đăng</p>
         </div>
         <div className="actions">
@@ -148,6 +178,48 @@ function PostForm() {
                 }}
               >
                 {opt}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <label>Chọn trang web đăng tin *</label>
+      <div className="dropdown" onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          className="dropdown-toggle control"
+          onClick={() => setOpenSites(!openSites)}
+        >
+          {selectedSites.length === 0
+            ? 'Tất cả trang web'
+            : selectedSites.length === availableSites.length
+            ? 'Tất cả trang web'
+            : `${selectedSites.length} trang web đã chọn`}
+        </button>
+        {openSites && (
+          <div className="dropdown-menu sites-menu" onMouseLeave={() => setOpenSites(false)}>
+            <div className="dropdown-actions">
+              <button type="button" className="action-btn" onClick={handleSelectAllSites}>
+                Chọn tất cả
+              </button>
+              <button type="button" className="action-btn" onClick={handleDeselectAllSites}>
+                Bỏ chọn tất cả
+              </button>
+            </div>
+            {availableSites.map((site) => (
+              <div
+                key={site.id}
+                className={`dropdown-item ${selectedSites.includes(site.url) ? 'active' : ''}`}
+                onClick={() => handleSiteToggle(site.url)}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedSites.includes(site.url)}
+                  onChange={() => {}} // Controlled by onClick
+                />
+                <span>{site.name}</span>
+                <small>({site.url})</small>
               </div>
             ))}
           </div>
@@ -192,6 +264,8 @@ function PostForm() {
       <button type="submit" className="submit-btn" disabled={isSubmitting}>
         {isSubmitting ? 'Đang đăng...' : 'Đăng tin tức'}
       </button>
+
+      {/* <PreviewModal /> */}
     </form>
   );
 }
