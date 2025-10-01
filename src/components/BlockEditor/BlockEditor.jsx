@@ -17,6 +17,9 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import RichTextEditor from '../RichTextEditor';
+import ListItemEditor from '../ListItemEditor';
+import '../../styles/RichTextEditor.css';
 
 import './BlockEditor.scss';
 
@@ -96,7 +99,7 @@ const SortableBlock = ({ id, children }) => {
 
 function BlockEditor({ blocks, setBlocks }) {
   const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
-  const listRefs = useRef({});
+  
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
@@ -256,7 +259,7 @@ function BlockEditor({ blocks, setBlocks }) {
                 );
               }
               if (block.type === 'paragraph') {
-                const value = typeof block.content === 'string' ? block.content : '';
+                const value = block.content || [{ text: '' }];
                 return (
                   <SortableBlock key={block.id} id={block.id}>
                     {({ setNodeRef, style, attributes, listeners }) => (
@@ -283,24 +286,13 @@ function BlockEditor({ blocks, setBlocks }) {
                             >
                               <FiTrash2 />
                             </button>
-                            {/* <button
-                                type="button"
-                                className="btn outline"
-                            
-                                aria-label="Kéo để sắp xếp"
-                                style={{ cursor: 'grab' }}
-                              >
-                                ⇅
-                              </button> */}
                           </div>
                         </div>
                         <div className="block-body">
-                          <textarea
-                            className="control textarea"
-                            rows={5}
-                            placeholder="Nhập nội dung đoạn văn..."
+                          <RichTextEditor
                             value={value}
-                            onChange={(e) => setBlockContent(idx, e.target.value)}
+                            onChange={(newValue) => setBlockContent(idx, newValue)}
+                            placeholder="Nhập nội dung đoạn văn..."
                           />
                         </div>
                       </div>
@@ -326,19 +318,15 @@ function BlockEditor({ blocks, setBlocks }) {
                 );
               }
               if (block.type === 'list') {
-                const items = Array.isArray(block.content) ? block.content : [''];
-                const setItem = (i, text) => {
+                const items = Array.isArray(block.content) ? block.content : [[{ text: '' }]];
+                const setItem = (i, richTextValue) => {
                   const next = items.slice();
-                  next[i] = text;
+                  next[i] = richTextValue;
                   setBlockContent(idx, next);
                 };
                 const addItem = () => {
-                  const next = [...items, ''];
+                  const next = [...items, [{ text: '' }]];
                   setBlockContent(idx, next);
-                  setTimeout(() => {
-                    const lastIndex = next.length - 1;
-                    listRefs.current[`${idx}-${lastIndex}`]?.focus();
-                  }, 0);
                 };
                 const removeLast = () =>
                   setBlockContent(idx, items.length > 1 ? items.slice(0, -1) : items);
@@ -371,16 +359,14 @@ function BlockEditor({ blocks, setBlocks }) {
                           </div>
                         </div>
                         <div className="block-body">
-                          {items.map((text, i) => (
-                            <input
-                              key={i}
-                              className="control input"
-                              type="text"
-                              ref={(el) => (listRefs.current[`${idx}-${i}`] = el)}
-                              placeholder={`Mục ${i + 1}... `}
-                              value={text}
-                              onChange={(e) => setItem(i, e.target.value)}
-                            />
+                          {items.map((item, i) => (
+                            <div key={i} style={{ marginBottom: '8px' }}>
+                              <ListItemEditor
+                                value={item}
+                                onChange={(newValue) => setItem(i, newValue)}
+                                placeholder={`Mục ${i + 1}...`}
+                              />
+                            </div>
                           ))}
                           <div className="row gap">
                             <button type="button" className="btn primary" onClick={addItem}>

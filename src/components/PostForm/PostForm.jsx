@@ -25,9 +25,9 @@ function PostForm() {
 
   // Danh sách các trang web
   const availableSites = [
-    { id: 'vinhomecangio', name: 'Vinhomes Green Paradise', url: 'http://vinhomes.org.vn/' },
+    { id: 'vinhomecangio', name: 'Vinhomes Green Paradise', url: 'http://vinhomecangio.vn/' },
     { id: 'thegioriverside', name: 'The Gió Riverside', url: 'http://angia.org.vn/' },
-    { id: 'example', name: 'Example', url: 'http://example.com.vn' },
+    { id: 'example', name: 'Example', url: 'http://example.com.vn/' },
   ];
 
   const handleSiteToggle = (siteUrl) => {
@@ -82,7 +82,31 @@ function PostForm() {
             content: block.content.name,
           });
         } else {
-          processedBlocks.push(block);
+          // Xử lý rich text cho paragraph và list
+          let processedBlock = { ...block };
+          
+          if (block.type === 'paragraph') {
+            // Đảm bảo paragraph có rich text format
+            if (Array.isArray(block.content)) {
+              processedBlock.content = block.content;
+            } else if (typeof block.content === 'string') {
+              processedBlock.content = [{ text: block.content }];
+            }
+          } else if (block.type === 'list') {
+            // Đảm bảo list items có rich text format
+            if (Array.isArray(block.content)) {
+              processedBlock.content = block.content.map(item => {
+                if (Array.isArray(item)) {
+                  return item;
+                } else if (typeof item === 'string') {
+                  return [{ text: item }];
+                }
+                return item;
+              });
+            }
+          }
+          
+          processedBlocks.push(processedBlock);
         }
       });
 
