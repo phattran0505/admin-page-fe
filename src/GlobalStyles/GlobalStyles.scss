@@ -34,10 +34,12 @@ body {
   color: var(--color-text);
   font-family: 'Roboto', sans-serif;
 }
+
 a {
   text-decoration: none;
   color: var(--color-text);
 }
+
 .App {
   display: flex;
   min-height: 100vh;
@@ -78,3 +80,4 @@ a {
     max-width: 100%;
   }
 }
+
